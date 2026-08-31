@@ -1,0 +1,394 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "leaflet/dist/leaflet.css";
+
+@custom-variant dark (&:is(.dark *));
+
+/* ============================================================================
+   ENVIRONMENTAL MONITORING - Clean Dashboard
+   
+   Palette reference (from Sequence):
+   #FBFCFC  - near-white background
+   #E0E5E9  - cool gray surface
+   #B2C9C5  - muted teal
+   #1BD488  - bright green (primary action)
+   #45828B  - medium teal
+   #055B65  - dark teal (sidebar / headings)
+   ============================================================================ */
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-body);
+  --font-mono: var(--font-mono);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+/* ============================================================================
+   LIGHT THEME
+   Warm near-white canvas, white cards, dark teal text, green accents
+   ============================================================================ */
+:root {
+  --radius: 0.625rem;
+
+  /* AegeanSense brand primitives */
+  --brand-canvas: #fbfcfc;
+  --brand-surface: #e0e5e9;
+  --brand-teal-soft: #b2c9c5;
+  --brand-green: #1bd488;
+  --brand-teal: #45828b;
+  --brand-teal-deep: #055b65;
+
+  /* Canvas and ink */
+  --background: var(--brand-canvas);
+  --foreground: var(--brand-teal-deep);
+
+  /* Cards: clean white */
+  --card: #ffffff;
+  --card-foreground: var(--brand-teal-deep);
+  --popover: #ffffff;
+  --popover-foreground: var(--brand-teal-deep);
+
+  /* Primary action */
+  --primary: var(--brand-green);
+  --primary-foreground: #033e46;
+
+  --secondary: var(--brand-surface);
+  --secondary-foreground: var(--brand-teal-deep);
+
+  --muted: color-mix(in srgb, var(--brand-surface) 58%, white);
+  --muted-foreground: #3b7078;
+
+  --accent: var(--brand-teal-soft);
+  --accent-foreground: var(--brand-teal-deep);
+
+  --destructive: #c84f45;
+
+  --border: color-mix(in srgb, var(--brand-teal-deep) 12%, transparent);
+  --input: color-mix(in srgb, var(--brand-teal-deep) 16%, transparent);
+  --ring: color-mix(in srgb, var(--brand-green) 55%, transparent);
+
+  /* Data palette: brand colors plus two restrained scientific accents */
+  --chart-1: var(--brand-green);
+  --chart-2: var(--brand-teal);
+  --chart-3: var(--brand-teal-deep);
+  --chart-4: #d5a43a;
+  --chart-5: #c9675a;
+
+  --sidebar: var(--brand-teal-deep);
+  --sidebar-foreground: #f3f8f7;
+  --sidebar-primary: var(--brand-green);
+  --sidebar-primary-foreground: #033e46;
+  --sidebar-accent: color-mix(in srgb, var(--brand-teal) 52%, var(--brand-teal-deep));
+  --sidebar-accent-foreground: #ffffff;
+  --sidebar-border: color-mix(in srgb, var(--brand-teal-soft) 22%, transparent);
+  --sidebar-ring: color-mix(in srgb, var(--brand-green) 58%, transparent);
+
+  --chart-bg: #ffffff;
+  --chart-text: var(--brand-teal-deep);
+}
+
+/* ============================================================================
+   DARK THEME
+   Deep teal canvas, slightly lifted cards, green stays punchy
+   ============================================================================ */
+.dark {
+  --background: #032f35;
+  --foreground: #edf6f4;
+
+  --card: #064049;
+  --card-foreground: #edf6f4;
+  --popover: #074851;
+  --popover-foreground: #edf6f4;
+
+  --primary: var(--brand-green);
+  --primary-foreground: #032f35;
+
+  --secondary: #0a4c54;
+  --secondary-foreground: #edf6f4;
+
+  --muted: #093f47;
+  --muted-foreground: var(--brand-teal-soft);
+
+  --accent: #135a63;
+  --accent-foreground: #f6fbfa;
+
+  --destructive: #e16c60;
+
+  --border: color-mix(in srgb, var(--brand-teal-soft) 16%, transparent);
+  --input: color-mix(in srgb, var(--brand-teal-soft) 21%, transparent);
+  --ring: color-mix(in srgb, var(--brand-green) 48%, transparent);
+
+  --chart-1: var(--brand-green);
+  --chart-2: #68a6ae;
+  --chart-3: var(--brand-teal-soft);
+  --chart-4: #e2b654;
+  --chart-5: #dc8175;
+
+  --sidebar: #02272c;
+  --sidebar-foreground: #edf6f4;
+  --sidebar-primary: var(--brand-green);
+  --sidebar-primary-foreground: #032f35;
+  --sidebar-accent: #08434b;
+  --sidebar-accent-foreground: #edf6f4;
+  --sidebar-border: color-mix(in srgb, var(--brand-teal-soft) 13%, transparent);
+  --sidebar-ring: color-mix(in srgb, var(--brand-green) 45%, transparent);
+
+  --chart-bg: #064049;
+  --chart-text: #d9e9e6;
+}
+
+/* ============================================================================
+   BASE
+   ============================================================================ */
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* ============================================================================
+   UTILITY CLASSES
+   ============================================================================ */
+
+/* Display headings - single type family, just heavier + tighter tracking.
+   Keeps the whole app on one consistent sans (no serif mix). */
+.font-display {
+  font-family: var(--font-body), ui-sans-serif, system-ui, sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+/* Engineering grid */
+.app-topo {
+  background-image:
+    linear-gradient(var(--border) 1px, transparent 1px),
+    linear-gradient(90deg, var(--border) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+
+/* Dot grid */
+.app-dots {
+  background-image: radial-gradient(circle, var(--border) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+/* Card hover lift */
+.app-card {
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+.app-card:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px oklch(0 0 0 / 5%), 0 8px 24px oklch(0 0 0 / 5%);
+}
+.dark .app-card:hover {
+  box-shadow: 0 2px 8px oklch(0 0 0 / 20%), 0 8px 24px oklch(0 0 0 / 30%);
+}
+
+/* Status pulse */
+@keyframes app-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+.app-pulse {
+  animation: app-pulse 2s ease-in-out infinite;
+}
+
+/* Stagger reveal */
+@keyframes app-reveal {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.app-reveal { animation: app-reveal 0.4s ease-out forwards; opacity: 0; }
+.app-reveal-1 { animation-delay: 0.05s; }
+.app-reveal-2 { animation-delay: 0.1s; }
+.app-reveal-3 { animation-delay: 0.15s; }
+.app-reveal-4 { animation-delay: 0.2s; }
+.app-reveal-5 { animation-delay: 0.25s; }
+
+/* Gradient text */
+.app-gradient-text {
+  background: linear-gradient(135deg, var(--brand-teal-deep), var(--brand-teal));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.dark .app-gradient-text {
+  background: linear-gradient(135deg, var(--brand-green), var(--brand-teal-soft));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Fading horizontal rule */
+.app-border-organic {
+  border-image: linear-gradient(90deg, transparent, var(--border), transparent) 1;
+}
+
+/* Status badges - derived activity (online / idle / offline) */
+.app-status-online,
+.app-status-connected {
+  background: color-mix(in srgb, var(--brand-green) 14%, transparent);
+  color: #08734d;
+  border-color: color-mix(in srgb, var(--brand-green) 28%, transparent);
+}
+.dark .app-status-online,
+.dark .app-status-connected {
+  background: color-mix(in srgb, var(--brand-green) 12%, transparent);
+  color: var(--brand-green);
+  border-color: color-mix(in srgb, var(--brand-green) 24%, transparent);
+}
+.app-status-idle {
+  background: color-mix(in srgb, #d5a43a 14%, transparent);
+  color: #806012;
+  border-color: color-mix(in srgb, #d5a43a 30%, transparent);
+}
+.dark .app-status-idle {
+  background: color-mix(in srgb, #e2b654 12%, transparent);
+  color: #e2b654;
+  border-color: color-mix(in srgb, #e2b654 24%, transparent);
+}
+.app-status-offline,
+.app-status-disconnected {
+  background: color-mix(in srgb, #c84f45 10%, transparent);
+  color: #9e342d;
+  border-color: color-mix(in srgb, #c84f45 22%, transparent);
+}
+.dark .app-status-offline,
+.dark .app-status-disconnected {
+  background: color-mix(in srgb, #e16c60 10%, transparent);
+  color: #ef8c82;
+  border-color: color-mix(in srgb, #e16c60 20%, transparent);
+}
+
+/* Shimmer sweep for loading skeletons */
+@keyframes app-shimmer {
+  100% { transform: translateX(100%); }
+}
+.app-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+.app-shimmer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    oklch(1 0 0 / 12%),
+    transparent
+  );
+  animation: app-shimmer 1.6s ease-in-out infinite;
+}
+.dark .app-shimmer::after {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    oklch(1 0 0 / 6%),
+    transparent
+  );
+}
+
+/* Backwards compat stubs */
+.app-waves, .app-grain::before { display: none; }
+
+/* ============================================================================
+   LEAFLET
+   ============================================================================ */
+.leaflet-container {
+  font-family: var(--font-body);
+  border-radius: var(--radius-lg);
+}
+.custom-marker {
+  background: transparent !important;
+  border: none !important;
+}
+.leaflet-popup-content-wrapper {
+  border-radius: var(--radius-lg) !important;
+  box-shadow: 0 4px 20px oklch(0 0 0 / 8%) !important;
+}
+.dark .leaflet-popup-content-wrapper {
+  background: #074851 !important;
+  color: #edf6f4 !important;
+}
+
+/* ============================================================================
+   HIGHCHARTS
+   ============================================================================ */
+.highcharts-container {
+  background-color: var(--chart-bg);
+  color: var(--chart-text);
+  border-radius: var(--radius-lg);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not(.light) {
+    --chart-bg: #064049;
+    --chart-text: #d9e9e6;
+  }
+}
+
+/* ============================================================================
+   SCROLLBAR
+   ============================================================================ */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--brand-teal) 28%, transparent);
+  border-radius: 99px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: color-mix(in srgb, var(--brand-teal) 46%, transparent);
+}
+.dark ::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--brand-teal-soft) 18%, transparent);
+}
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: color-mix(in srgb, var(--brand-teal-soft) 32%, transparent);
+}
+
+/* ============================================================================
+   SELECTION
+   ============================================================================ */
+::selection {
+  background: color-mix(in srgb, var(--brand-green) 24%, transparent);
+}
+.dark ::selection {
+  background: color-mix(in srgb, var(--brand-green) 30%, transparent);
+}

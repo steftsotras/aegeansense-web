@@ -2,7 +2,6 @@
 
 import * as React from "react"
 import Link from "next/link"
-import Image from "next/image"
 import { usePathname } from "next/navigation"
 import {
   IconHome,
@@ -36,6 +35,7 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible"
 import { cn } from "@/lib/utils"
+import { BrandWordmark } from "@/components/brand-wordmark"
 import { getStationActivity, relativeTimeGreek } from "@/lib/station-status"
 import type { Station } from "@/lib/api"
 
@@ -112,21 +112,12 @@ export function AppSidebar({
                 <SidebarMenuButton
                   asChild
                   size="lg"
-                  className="h-auto min-h-14 px-2 py-2 hover:bg-sidebar-accent/50"
+                  className="h-auto min-h-14 px-2 py-2 hover:bg-sidebar-accent/70"
                 >
-                  <Link href="/" className="flex items-center gap-3">
-                    <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-white shadow-sm ring-1 ring-white/20">
-                      <Image
-                        src="/logo-aegeansense-symbol.png"
-                        alt=""
-                        width={40}
-                        height={40}
-                        className="size-9 object-contain"
-                      />
-                    </span>
-                    <span className="truncate text-[15px] font-semibold tracking-tight text-sidebar-foreground">
-                      AegeanSense
-                    </span>
+                  <Link href="/" aria-label="AegeanSense — Αρχική">
+                    <BrandWordmark
+                      className="w-[156px] max-w-full"
+                    />
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -149,7 +140,7 @@ export function AppSidebar({
                     asChild
                     isActive={item.url === "/" ? pathname === "/" : pathname.startsWith(item.url)}
                     tooltip={item.title}
-                    className="data-[active=true]:bg-sidebar-primary/15 data-[active=true]:text-sidebar-primary rounded-lg"
+                    className="rounded-md text-sidebar-foreground/70 data-[active=true]:bg-sidebar-accent data-[active=true]:font-medium data-[active=true]:text-sidebar-foreground"
                   >
                     <Link href={item.url}>
                       <item.icon className="size-4" />
@@ -183,8 +174,8 @@ export function AppSidebar({
                   <Collapsible key={type} defaultOpen={isDefaultOpen} className="group/collapsible">
                     <SidebarMenuItem>
                       <CollapsibleTrigger asChild>
-                        <SidebarMenuButton tooltip={config.label} className="rounded-lg hover:bg-sidebar-accent/50">
-                          <StationIcon className="size-4 text-sidebar-primary/70" />
+                        <SidebarMenuButton tooltip={config.label} className="rounded-md text-sidebar-foreground/70 hover:bg-sidebar-accent/70 hover:text-sidebar-foreground">
+                          <StationIcon className="size-4 text-sidebar-foreground/45" />
                           <span className="text-sm">{config.label}</span>
                           <span className="ml-auto text-[10px] text-sidebar-foreground/30 tabular-nums">{typeStations.length}</span>
                           <IconChevronRight className="ml-1 size-3 text-sidebar-foreground/30 transition-transform group-data-[state=open]/collapsible:rotate-90" />
@@ -200,7 +191,7 @@ export function AppSidebar({
                                 <SidebarMenuSubButton
                                   asChild
                                   isActive={isActive}
-                                  className="data-[active=true]:bg-sidebar-primary/10 rounded-md"
+                                  className="rounded-md data-[active=true]:bg-sidebar-accent data-[active=true]:text-sidebar-foreground"
                                 >
                                   <Link
                                     href={`/dashboard/${station.id}`}
@@ -250,7 +241,7 @@ export function AppSidebar({
                   asChild
                   tooltip="Πληροφορίες"
                   isActive={pathname === "/about"}
-                  className="data-[active=true]:bg-sidebar-primary/15 data-[active=true]:text-sidebar-primary rounded-lg"
+                  className="rounded-md text-sidebar-foreground/70 data-[active=true]:bg-sidebar-accent data-[active=true]:font-medium data-[active=true]:text-sidebar-foreground"
                 >
                   <Link href="/about">
                     <IconInfoCircle className="size-4" />

@@ -107,14 +107,14 @@
   --chart-4: #d5a43a;
   --chart-5: #c9675a;
 
-  --sidebar: var(--brand-teal-deep);
-  --sidebar-foreground: #f3f8f7;
-  --sidebar-primary: var(--brand-green);
-  --sidebar-primary-foreground: #033e46;
-  --sidebar-accent: color-mix(in srgb, var(--brand-teal) 52%, var(--brand-teal-deep));
-  --sidebar-accent-foreground: #ffffff;
-  --sidebar-border: color-mix(in srgb, var(--brand-teal-soft) 22%, transparent);
-  --sidebar-ring: color-mix(in srgb, var(--brand-green) 58%, transparent);
+  --sidebar: #ffffff;
+  --sidebar-foreground: #292d2c;
+  --sidebar-primary: #292d2c;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #f2f4f3;
+  --sidebar-accent-foreground: #202423;
+  --sidebar-border: #e3e7e5;
+  --sidebar-ring: #89938f;
 
   --chart-bg: #ffffff;
   --chart-text: var(--brand-teal-deep);
@@ -157,14 +157,14 @@
   --chart-4: #e2b654;
   --chart-5: #dc8175;
 
-  --sidebar: #02272c;
-  --sidebar-foreground: #edf6f4;
-  --sidebar-primary: var(--brand-green);
-  --sidebar-primary-foreground: #032f35;
-  --sidebar-accent: #08434b;
-  --sidebar-accent-foreground: #edf6f4;
-  --sidebar-border: color-mix(in srgb, var(--brand-teal-soft) 13%, transparent);
-  --sidebar-ring: color-mix(in srgb, var(--brand-green) 45%, transparent);
+  --sidebar: #151817;
+  --sidebar-foreground: #f1f3f2;
+  --sidebar-primary: #e7eae8;
+  --sidebar-primary-foreground: #151817;
+  --sidebar-accent: #242927;
+  --sidebar-accent-foreground: #ffffff;
+  --sidebar-border: #303633;
+  --sidebar-ring: #8e9894;
 
   --chart-bg: #064049;
   --chart-text: #d9e9e6;
@@ -347,6 +347,48 @@
 .dark .leaflet-popup-content-wrapper {
   background: #074851 !important;
   color: #edf6f4 !important;
+}
+
+/* Homepage map: restrained monochrome, like a printed survey map. */
+.station-map-newsprint {
+  overflow: hidden;
+  background: #d8d5ce;
+}
+.station-map-newsprint .leaflet-container {
+  border-radius: 0;
+  background: #d8d5ce;
+}
+.station-map-newsprint .leaflet-tile-pane {
+  filter: grayscale(1) sepia(0.14) saturate(0.2) contrast(0.82) brightness(1.04);
+}
+.station-map-newsprint::after {
+  position: absolute;
+  z-index: 450;
+  inset: 0;
+  pointer-events: none;
+  content: "";
+  opacity: 0.1;
+  background-image: radial-gradient(circle, #172425 0.45px, transparent 0.55px);
+  background-size: 4px 4px;
+  mix-blend-mode: multiply;
+}
+.station-map-newsprint .leaflet-control-zoom a,
+.station-map-newsprint .leaflet-control-attribution {
+  filter: grayscale(1);
+}
+.dark .station-map-newsprint {
+  background: #17272a;
+}
+.dark .station-map-newsprint .leaflet-container {
+  background: #17272a;
+}
+.dark .station-map-newsprint .leaflet-tile-pane {
+  filter: grayscale(1) sepia(0.08) saturate(0.15) contrast(0.9) brightness(0.58);
+}
+.dark .station-map-newsprint::after {
+  opacity: 0.08;
+  background-image: radial-gradient(circle, #f0eee7 0.45px, transparent 0.55px);
+  mix-blend-mode: screen;
 }
 
 /* ============================================================================

@@ -81,6 +81,15 @@ export function SiteHeader() {
         </Breadcrumb>
 
         <div className="ml-auto flex items-center gap-2">
+          {/* <Image
+            src="/ellada-2.0-logo_gr.png"
+            alt="Ελλάδα 2.0"
+            width={116}
+            height={43}
+            className="hidden h-7 w-auto object-contain sm:block"
+            priority
+          /> */}
+          {/* <Separator orientation="vertical" className="mx-1 hidden data-[orientation=vertical]:h-5 sm:block" /> */}
           <div className="hidden md:flex items-center gap-2 px-3 py-1 rounded-full bg-primary/8 border border-primary/12">
             <div className="w-1.5 h-1.5 rounded-full bg-primary app-pulse" />
             <span className="text-[11px] font-semibold text-primary tracking-wide">LIVE</span>

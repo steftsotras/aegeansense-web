@@ -46,25 +46,45 @@ const MapAutoResize = dynamic(
 )
 
 // Fix for default marker icons in Next.js
-const createIcon = (color: string) => {
+const createIcon = (color: string, variant: "default" | "newsprint") => {
   if (typeof window === "undefined") return null
   // Use dynamic import to avoid SSR issues
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   const L = require("leaflet")
+  const isNewsprint = variant === "newsprint"
+  const markerHtml = isNewsprint
+    ? `<div style="
+        display: grid;
+        place-items: center;
+        background-color: ${color};
+        width: 20px;
+        height: 20px;
+        border-radius: 9999px;
+        border: 2px solid #f8faf9;
+        box-shadow: 0 0 0 2px rgba(5, 91, 101, 0.2), 0 3px 10px rgba(5, 91, 101, 0.22);
+      "><span style="
+        display: block;
+        width: 6px;
+        height: 6px;
+        border-radius: 9999px;
+        background: #f8faf9;
+      "></span></div>`
+    : `<div style="
+        background-color: ${color};
+        width: 24px;
+        height: 24px;
+        border-radius: 50% 50% 50% 0;
+        transform: rotate(-45deg);
+        border: 3px solid white;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+      "></div>`
+
   return L.divIcon({
     className: "custom-marker",
-    html: `<div style="
-      background-color: ${color};
-      width: 24px;
-      height: 24px;
-      border-radius: 50% 50% 50% 0;
-      transform: rotate(-45deg);
-      border: 3px solid white;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-    "></div>`,
-    iconSize: [24, 24],
-    iconAnchor: [12, 24],
-    popupAnchor: [0, -24],
+    html: markerHtml,
+    iconSize: isNewsprint ? [20, 20] : [24, 24],
+    iconAnchor: isNewsprint ? [10, 10] : [12, 24],
+    popupAnchor: isNewsprint ? [0, -12] : [0, -24],
   })
 }
 
@@ -94,6 +114,7 @@ interface StationMapProps {
   frameless?: boolean
   cardTitle?: string
   cardDescription?: string
+  variant?: "default" | "newsprint"
 }
 
 export function StationMap({
@@ -104,6 +125,7 @@ export function StationMap({
   frameless = false,
   cardTitle = "Station Locations",
   cardDescription = "Interactive map showing the location of all monitoring stations",
+  variant = "default",
 }: StationMapProps) {
   const [mounted, setMounted] = useState(false)
 
@@ -150,7 +172,7 @@ export function StationMap({
     <div
       className={`relative isolate z-0 w-full ${
         frameless ? "" : "rounded-lg overflow-hidden border shadow-lg"
-      } ${className}`}
+      } ${variant === "newsprint" ? "station-map-newsprint" : ""} ${className}`}
       style={{ height, minHeight: "200px" }}
     >
       <MapContainer
@@ -167,8 +189,13 @@ export function StationMap({
         {stationsWithLocation.map((station) => {
           const lat = station.latitude as number
           const lng = station.longitude as number
-          const color = getStationColor(station.type)
-          const icon = createIcon(color) || undefined
+          const color =
+            variant === "newsprint"
+              ? station.connection_status === "CONNECTED"
+                ? "#1bd488"
+                : "#68746f"
+              : getStationColor(station.type)
+          const icon = createIcon(color, variant) || undefined
           return (
             <Marker
               key={station.id}
@@ -185,7 +212,7 @@ export function StationMap({
                   </p>
                   {station.connection_status && (
                     <p className="text-xs">
-                      Status:{" "}
+                      Κατάσταση:{" "}
                       <span
                         className={
                           station.connection_status === "CONNECTED"
@@ -199,7 +226,7 @@ export function StationMap({
                   )}
                   {station.metrics?.airTemperature && (
                     <p className="text-xs mt-1">
-                      Temperature: {Number(station.metrics.airTemperature.value).toFixed(1)}
+                      Θερμοκρασία: {Number(station.metrics.airTemperature.value).toFixed(1)}
                       {station.metrics.airTemperature.unit}
                     </p>
                   )}

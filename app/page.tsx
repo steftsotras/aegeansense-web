@@ -15,7 +15,9 @@ import { BrandWordmark } from "@/components/brand-wordmark"
 import { StationMap } from "@/components/station-map"
 import { Button } from "@/components/ui/button"
 import { api, type Station } from "@/lib/api"
-import { getStationActivity, relativeTimeGreek } from "@/lib/station-status"
+import { relativeTimeGreek } from "@/lib/station-status"
+
+const DEFAULT_MEASUREMENTS_IN_DATABASE = 1_085_238
 
 async function fetchStations(): Promise<Station[]> {
   try {
@@ -27,9 +29,9 @@ async function fetchStations(): Promise<Station[]> {
 }
 
 const typeConfig: Record<string, { label: string; icon: React.ElementType }> = {
-  MicroclimateStation: { label: "Μικροκλιματικοί", icon: IconTemperature },
-  WeatherStation: { label: "Μετεωρολογικοί", icon: IconCloudRain },
   IndoorAirQuality: { label: "Ποιότητα Αέρα", icon: IconBuildingFactory },
+  WeatherStation: { label: "Μετεωρολογικοί", icon: IconCloudRain },
+  MicroclimateStation: { label: "Μικροκλιματικοί", icon: IconTemperature },
 }
 
 const capabilities = [
@@ -65,8 +67,8 @@ const capabilities = [
 
 export default async function Home() {
   const stations = await fetchStations()
-  const activeCount = stations.filter(
-    (station) => getStationActivity(station).status === "online"
+  const connectedCount = stations.filter(
+    (station) => station.connection_status === "CONNECTED"
   ).length
   const typeCounts = stations.reduce(
     (counts, station) => {
@@ -82,6 +84,14 @@ export default async function Home() {
     }
     return latest
   }, null)
+  const metricCount = new Set(
+    stations.flatMap((station) => Object.keys(station.metrics || {}))
+  ).size
+  const configuredMeasurementCount = Number(process.env.NEXT_PUBLIC_READINGS_IN_DB)
+  const measurementsInDatabase = Number.isFinite(configuredMeasurementCount)
+    ? configuredMeasurementCount
+    : DEFAULT_MEASUREMENTS_IN_DATABASE
+
   return (
     <main className="min-h-screen bg-background">
       <div className="mx-auto w-full max-w-[1440px] px-4 pb-10 pt-6 sm:px-6 md:pt-8 lg:px-8">
@@ -135,8 +145,8 @@ export default async function Home() {
             </div>
           </div>
 
-          <figure className="min-w-0">
-            <div className="relative h-[clamp(380px,38vw,520px)] overflow-hidden rounded-lg bg-muted shadow-sm">
+          <figure className="min-w-0 overflow-hidden rounded-lg bg-card shadow-sm">
+            <div className="relative h-[clamp(380px,38vw,520px)] overflow-hidden bg-muted">
               <StationMap
                 stations={stations}
                 showCard={false}
@@ -149,50 +159,60 @@ export default async function Home() {
                 Χάρτης σταθμών
               </div>
             </div>
+
+            <figcaption className="grid gap-3 border-t border-border/60 bg-card/95 px-4 py-3 sm:px-5 md:grid-cols-[minmax(0,1fr)_auto] md:items-center">
+              {Object.keys(typeCounts).length > 0 && (
+                <div className="flex flex-wrap gap-x-5 gap-y-2">
+                  {Object.entries(typeConfig).map(([type, config]) => {
+                    const count = typeCounts[type]
+                    if (!count) return null
+                    const Icon = config.icon
+                    return (
+                      <Link
+                        key={type}
+                        href="/dashboard"
+                        className="group flex items-center gap-2 text-[10px] uppercase tracking-[0.08em] text-muted-foreground transition-colors hover:text-foreground"
+                      >
+                        <span className="grid size-6 place-items-center rounded-full border border-border/70 bg-muted/70 text-foreground">
+                          <Icon className="size-3.5" />
+                        </span>
+                        <span>{config.label}</span>
+                        <strong className="font-display text-xs font-semibold text-foreground">
+                          {count}
+                        </strong>
+                      </Link>
+                    )
+                  })}
+                </div>
+              )}
+
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-[9px] uppercase tracking-[0.08em] text-muted-foreground">
+                <LegendStatus color="#1bd488" label="Συνδεδεμένος" />
+                <LegendStatus color="#d5a43a" label="Βλάβη" />
+                <LegendStatus color="#68746f" label="Ανενεργό" />
+              </div>
+            </figcaption>
           </figure>
         </section>
 
         <section className="rounded-lg bg-muted/55 px-2 sm:px-4" aria-label="Κατάσταση δικτύου">
           <div className="grid grid-cols-2 md:grid-cols-4">
-            <StatItem label="Σταθμοί" value={String(stations.length)} />
             <StatItem
-              label="Ενεργοί τώρα"
-              value={String(activeCount)}
-              sub={`/ ${stations.length}`}
+              label="Μετρήσεις στη βάση"
+              value={measurementsInDatabase.toLocaleString("el-GR")}
+            />
+            <StatItem
+              label="Συνδεδεμένοι τώρα"
+              value={String(connectedCount)}
               accent
             />
-            <StatItem label="Κατηγορίες" value={String(Object.keys(typeCounts).length)} />
+            <StatItem label="Μετρούμενα μεγέθη" value={String(metricCount)} />
             <StatItem
               label="Τελ. ενημέρωση"
               value={lastUpdate ? relativeTimeGreek(lastUpdate) : "—"}
               compact
             />
           </div>
-
-          {Object.keys(typeCounts).length > 0 && (
-            <div className="flex flex-wrap gap-x-8 gap-y-3 px-2 pb-5 pt-1 md:px-5">
-              {Object.entries(typeCounts).map(([type, count]) => {
-                const config = typeConfig[type] || {
-                  label: type,
-                  icon: IconCloudRain,
-                }
-                const Icon = config.icon
-                return (
-                  <Link
-                    key={type}
-                    href="/dashboard"
-                    className="group flex items-center gap-2.5 text-xs uppercase tracking-[0.09em] text-muted-foreground transition-colors hover:text-foreground"
-                  >
-                    <Icon className="size-4 text-primary" />
-                    <span>{config.label}</span>
-                    <strong className="font-display text-sm font-semibold text-foreground">
-                      {count}
-                    </strong>
-                  </Link>
-                )
-              })}
-            </div>
-          )}
         </section>
 
         <section className="mt-16 md:mt-20">
@@ -259,13 +279,11 @@ export default async function Home() {
 function StatItem({
   label,
   value,
-  sub,
   compact,
   accent,
 }: {
   label: string
   value: string
-  sub?: string
   compact?: boolean
   accent?: boolean
 }) {
@@ -282,8 +300,16 @@ function StatItem({
         }`}
       >
         {value}
-        {sub && <span className="text-xs font-normal text-muted-foreground">{sub}</span>}
       </p>
     </div>
+  )
+}
+
+function LegendStatus({ color, label }: { color: string; label: string }) {
+  return (
+    <span className="inline-flex items-center gap-1.5 whitespace-nowrap">
+      <span className="size-2 rounded-full" style={{ backgroundColor: color }} />
+      {label}
+    </span>
   )
 }

@@ -1,9 +1,9 @@
 /**
  * API Client
- * 
+ *
  * TypeScript client for the monitoring backend API.
  * This replaces direct FINoT API calls with calls to your backend.
- * 
+ *
  * Usage:
  *   import { api } from '@/lib/api';
  *   const stations = await api.getStations();
@@ -133,7 +133,18 @@ export class ApiClient {
         let detail: string | undefined;
         try {
           const errorData = await response.json();
-          detail = errorData.detail;
+          const rawDetail: unknown = errorData.detail;
+          if (typeof rawDetail === 'string') {
+            detail = rawDetail;
+          } else if (Array.isArray(rawDetail)) {
+            detail = rawDetail.map((issue: unknown) => {
+              if (!issue || typeof issue !== 'object') return 'Invalid request';
+              const { loc, msg } = issue as { loc?: unknown[]; msg?: unknown };
+              const field = Array.isArray(loc) ? loc.filter(part => part !== 'body').join('.') : '';
+              const message = typeof msg === 'string' ? msg : 'Invalid value';
+              return field ? `${field}: ${message}` : message;
+            }).join('; ');
+          }
         } catch {
           // Ignore JSON parse errors
         }
@@ -167,7 +178,7 @@ export class ApiClient {
 
   private buildQueryString(params: Record<string, unknown> | StationsFilter): string {
     const searchParams = new URLSearchParams();
-    
+
     Object.entries(params).forEach(([key, value]) => {
       if (value !== undefined && value !== null) {
         if (Array.isArray(value)) {
@@ -188,35 +199,36 @@ export class ApiClient {
 
   /**
    * Get all stations with their latest metric readings.
-   * 
+   *
    * @param filter - Optional filters for type and status
    * @param options - Fetch options (for Next.js caching)
    * @returns Array of stations with metrics
-   * 
+   *
    * @example
    * // Get all stations
    * const stations = await api.getStations();
-   * 
+   *
    * // Filter by type
    * const microclimate = await api.getStations({ type: 'MicroclimateStation' });
-   * 
+   *
    * // Filter by connection status
    * const connected = await api.getStations({ status: 'CONNECTED' });
-   * 
+   *
    * // With Next.js revalidation
    * const stations = await api.getStations({}, { next: { revalidate: 60 } });
    */
   async getStations(filter?: StationsFilter, options?: RequestInit): Promise<Station[]> {
     const query = this.buildQueryString(filter || {});
-    return this.request<Station[]>(`/api/stations${query}`, options);
+    // Trailing slash matches the FastAPI route; without it the API answers with a redirect.
+    return this.request<Station[]>(`/api/stations/${query}`, options);
   }
 
   /**
    * Get a single station by ID.
-   * 
+   *
    * @param stationId - Station UUID
    * @returns Station with metrics
-   * 
+   *
    * @example
    * const station = await api.getStation('a39e85fc-f9ca-4425-a0fa-2794577f0510');
    */
@@ -226,22 +238,22 @@ export class ApiClient {
 
   /**
    * Get historical readings for a station.
-   * 
+   *
    * @param stationId - Station UUID
    * @param options - Query options (from, to, metrics, agg)
    * @returns Historical data with time series
-   * 
+   *
    * @example
    * // Last 30 days, all metrics
    * const data = await api.getReadings(stationId);
-   * 
+   *
    * // Specific date range with daily aggregation
    * const data = await api.getReadings(stationId, {
    *   from: '2024-01-01',
    *   to: '2024-01-31',
    *   agg: 'day'
    * });
-   * 
+   *
    * // Specific metrics only
    * const data = await api.getReadings(stationId, {
    *   metrics: ['airTemperature', 'airRelativeHumidity']
@@ -252,7 +264,7 @@ export class ApiClient {
     options: ReadingsOptions = {}
   ): Promise<HistoricalData> {
     const params: Record<string, unknown> = {};
-    
+
     if (options.from) {
       params.from = this.formatDate(options.from);
     }
@@ -275,10 +287,10 @@ export class ApiClient {
   /**
    * Get the most recent reading for each metric.
    * Fast endpoint ideal for dashboards.
-   * 
+   *
    * @param stationId - Station UUID
    * @returns Object with metric names as keys
-   * 
+   *
    * @example
    * const latest = await api.getLatestReadings(stationId);
    * console.log(`Temperature: ${latest.airTemperature?.value}°C`);
@@ -294,9 +306,9 @@ export class ApiClient {
   /**
    * Get all metric definitions.
    * Useful for building dropdowns, displaying labels and units.
-   * 
+   *
    * @returns Array of metric definitions
-   * 
+   *
    * @example
    * const metrics = await api.getMetrics();
    * const metricLabels = Object.fromEntries(
@@ -304,7 +316,7 @@ export class ApiClient {
    * );
    */
   async getMetrics(): Promise<MetricDefinition[]> {
-    return this.request<MetricDefinition[]>('/api/metrics');
+    return this.request<MetricDefinition[]>('/api/metrics/');
   }
 
   // ---------------------------------------------------------------------------
@@ -446,7 +458,7 @@ export class ApiClient {
 
   /**
    * Health check.
-   * 
+   *
    * @returns Health status
    */
   async health(): Promise<HealthStatus> {
@@ -455,7 +467,7 @@ export class ApiClient {
 
   /**
    * Full system test (FINoT + Database).
-   * 
+   *
    * @returns Detailed test results
    */
   async test(): Promise<unknown> {

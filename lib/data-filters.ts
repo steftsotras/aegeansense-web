@@ -6,7 +6,7 @@ export interface DateRange {
     start: Date
     end: Date
   }
-  
+
   /**
    * Get the available date range from chart data
    */
@@ -14,14 +14,14 @@ export interface DateRange {
     data: Array<[number, number | null]>
   ): DateRange | null {
     if (data.length === 0) return null
-  
+
     const timestamps = data.map(([ts]) => ts)
     return {
       start: new Date(Math.min(...timestamps)),
       end: new Date(Math.max(...timestamps)),
     }
   }
-  
+
   /**
    * Filter data to a specific day
    */
@@ -31,15 +31,15 @@ export interface DateRange {
   ): Array<[number, number | null]> {
     const startOfDay = new Date(date)
     startOfDay.setHours(0, 0, 0, 0)
-  
+
     const endOfDay = new Date(date)
     endOfDay.setHours(23, 59, 59, 999)
-  
+
     return data.filter(
       ([ts]) => ts >= startOfDay.getTime() && ts <= endOfDay.getTime()
     )
   }
-  
+
   /**
    * Filter data to a specific month
    */
@@ -50,12 +50,12 @@ export interface DateRange {
   ): Array<[number, number | null]> {
     const startOfMonth = new Date(year, month, 1, 0, 0, 0, 0)
     const endOfMonth = new Date(year, month + 1, 0, 23, 59, 59, 999)
-  
+
     return data.filter(
       ([ts]) => ts >= startOfMonth.getTime() && ts <= endOfMonth.getTime()
     )
   }
-  
+
   /**
    * Trim leading zeros/nulls before actual data starts
    * More aggressive - looks for actual meaningful values
@@ -65,7 +65,7 @@ export interface DateRange {
     threshold: number = 0.001
   ): Array<[number, number | null]> {
     if (data.length === 0) return []
-  
+
     // Find first valid non-zero value
     let firstValidIndex = -1
     for (let i = 0; i < data.length; i++) {
@@ -75,17 +75,17 @@ export interface DateRange {
         break
       }
     }
-  
+
     // All zeros or nulls - return empty
     if (firstValidIndex === -1) return []
-  
+
     // No leading zeros
     if (firstValidIndex === 0) return data
-  
+
     // Start from first valid value (no need to keep zeros before)
     return data.slice(firstValidIndex)
   }
-  
+
   /**
    * Trim trailing zeros/nulls after data ends
    */
@@ -94,7 +94,7 @@ export interface DateRange {
     threshold: number = 0.001
   ): Array<[number, number | null]> {
     if (data.length === 0) return []
-  
+
     // Find last valid non-zero value
     let lastValidIndex = -1
     for (let i = data.length - 1; i >= 0; i--) {
@@ -104,13 +104,13 @@ export interface DateRange {
         break
       }
     }
-  
+
     if (lastValidIndex === -1) return []
     if (lastValidIndex === data.length - 1) return data
-  
+
     return data.slice(0, lastValidIndex + 1)
   }
-  
+
   /**
    * Trim both leading and trailing zeros
    */
@@ -121,7 +121,7 @@ export interface DateRange {
     const trimmedLeading = trimLeadingZeros(data, threshold)
     return trimTrailingZeros(trimmedLeading, threshold)
   }
-  
+
   /**
    * Check if data has any valid (non-null, non-zero) readings
    */
@@ -133,7 +133,7 @@ export interface DateRange {
       ([, value]) => value !== null && Math.abs(value) > threshold
     )
   }
-  
+
   /**
    * Get navigation dates for a given period
    */
@@ -143,16 +143,16 @@ export interface DateRange {
     direction: "prev" | "next"
   ): Date {
     const newDate = new Date(currentDate)
-  
+
     if (mode === "daily") {
       newDate.setDate(newDate.getDate() + (direction === "next" ? 1 : -1))
     } else if (mode === "monthly") {
       newDate.setMonth(newDate.getMonth() + (direction === "next" ? 1 : -1))
     }
-  
+
     return newDate
   }
-  
+
   /**
    * Check if navigation is possible in a given direction
    */
@@ -163,7 +163,7 @@ export interface DateRange {
     direction: "prev" | "next"
   ): boolean {
     if (!dateRange) return false
-  
+
     if (direction === "prev") {
       if (mode === "daily") {
         const prevDay = new Date(currentDate)
@@ -188,7 +188,7 @@ export interface DateRange {
       }
     }
   }
-  
+
   /**
    * Format date for display based on mode
    */
@@ -209,7 +209,7 @@ export interface DateRange {
     }
     return "Όλα τα δεδομένα"
   }
-  
+
   /**
    * Get the latest date with valid data in the dataset
    */
@@ -218,7 +218,7 @@ export interface DateRange {
     threshold: number = 0.001
   ): Date | null {
     if (data.length === 0) return null
-  
+
     // Find the latest timestamp with a valid non-zero value
     for (let i = data.length - 1; i >= 0; i--) {
       const value = data[i][1]
@@ -226,18 +226,18 @@ export interface DateRange {
         return new Date(data[i][0])
       }
     }
-  
+
     // Fallback to latest timestamp
     return new Date(data[data.length - 1][0])
   }
-  
+
   /**
    * Get the start of the month containing the given date
    */
   export function getMonthStart(date: Date): Date {
     return new Date(date.getFullYear(), date.getMonth(), 1)
   }
-  
+
   /**
    * Get the end of the month containing the given date
    */

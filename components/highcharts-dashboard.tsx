@@ -109,15 +109,15 @@ export function HighchartsDashboard({
   // Get available metrics sorted (active first, inactive last)
   const sortedAttributes = React.useMemo(() => {
     if (!data?.series) return []
-    
+
     const attributes = data.series.map((s) => s.metric)
-    
+
     return attributes.sort((a, b) => {
       const aData = allChartData[a] || []
       const bData = allChartData[b] || []
       const aHasData = aData.length > 0
       const bHasData = bData.length > 0
-      
+
       if (aHasData && !bHasData) return -1
       if (!aHasData && bHasData) return 1
       return 0

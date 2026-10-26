@@ -78,13 +78,13 @@ export function ChartStats({ data, unit = "", className }: ChartStatsProps) {
         <span className="tabular-nums">{formatValue(stats.min)}</span>
         {unit && <span className="opacity-60">{unit}</span>}
       </span>
-      
+
       <span className="inline-flex items-center gap-1" title="Μέγιστο">
         <TrendingUp className="h-3 w-3 text-red-500/70" />
         <span className="tabular-nums">{formatValue(stats.max)}</span>
         {unit && <span className="opacity-60">{unit}</span>}
       </span>
-      
+
       <span className="inline-flex items-center gap-1" title="Μέσος Όρος">
         <Activity className="h-3 w-3 text-amber-500/70" />
         <span className="tabular-nums">{formatValue(stats.avg)}</span>
@@ -115,7 +115,7 @@ export function ChartStatsExtended({ data, unit = "", className }: ChartStatsPro
           {formatValue(stats.min)} {unit}
         </span>
       </div>
-      
+
       <div className="flex flex-col">
         <span className="text-muted-foreground flex items-center gap-1">
           <TrendingUp className="h-3 w-3 text-red-500/70" />
@@ -125,7 +125,7 @@ export function ChartStatsExtended({ data, unit = "", className }: ChartStatsPro
           {formatValue(stats.max)} {unit}
         </span>
       </div>
-      
+
       <div className="flex flex-col">
         <span className="text-muted-foreground flex items-center gap-1">
           <Activity className="h-3 w-3 text-amber-500/70" />
@@ -135,7 +135,7 @@ export function ChartStatsExtended({ data, unit = "", className }: ChartStatsPro
           {formatValue(stats.avg)} {unit}
         </span>
       </div>
-      
+
       <div className="flex flex-col">
         <span className="text-muted-foreground flex items-center gap-1">
           <Clock className="h-3 w-3 text-green-500/70" />

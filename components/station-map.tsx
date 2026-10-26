@@ -358,4 +358,3 @@ export function StationMap({
 
   return mapContent
 }
-

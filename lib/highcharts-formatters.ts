@@ -30,7 +30,7 @@ function parseTimestamp(timestamp: string): number {
 /**
  * Converts historical data for a single attribute to Highcharts format
  * Returns an array of [timestamp, value] pairs where timestamp is in milliseconds
- * 
+ *
  * @param attributeName - The name of the attribute to extract
  * @param data - The historical data response
  * @returns Array of [timestamp, value] pairs in Highcharts format
@@ -102,11 +102,11 @@ export function chunkData<T>(
   chunkSize: number = 1000
 ): T[][] {
   const chunks: T[][] = []
-  
+
   for (let i = 0; i < data.length; i += chunkSize) {
     chunks.push(data.slice(i, i + chunkSize))
   }
-  
+
   return chunks
 }
 
@@ -152,7 +152,7 @@ export function aggregateByDay(
     const date = new Date(timestamp)
     // Create a key for the day (YYYY-MM-DD)
     const dayKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`
-    
+
     if (!dayGroups.has(dayKey)) {
       dayGroups.set(dayKey, [])
     }
@@ -161,11 +161,11 @@ export function aggregateByDay(
 
   // Calculate average for each day
   const aggregated: Array<[number, number | null]> = []
-  
+
   for (const [, dayData] of dayGroups.entries()) {
     // Filter out null values for averaging
     const validValues = dayData.filter(([, v]) => v !== null).map(([, v]) => v as number)
-    
+
     let avgValue: number | null = null
     if (validValues.length > 0) {
       avgValue = validValues.reduce((sum, val) => sum + val, 0) / validValues.length
@@ -175,7 +175,7 @@ export function aggregateByDay(
     const [firstTimestamp] = dayData[0]
     const dayStart = new Date(firstTimestamp)
     dayStart.setHours(0, 0, 0, 0)
-    
+
     aggregated.push([dayStart.getTime(), avgValue])
   }
 
@@ -200,7 +200,7 @@ export function aggregateByHour(
     const date = new Date(timestamp)
     // Create a key for the hour (YYYY-MM-DD-HH)
     const hourKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}-${String(date.getHours()).padStart(2, "0")}`
-    
+
     if (!hourGroups.has(hourKey)) {
       hourGroups.set(hourKey, [])
     }
@@ -209,11 +209,11 @@ export function aggregateByHour(
 
   // Calculate average for each hour
   const aggregated: Array<[number, number | null]> = []
-  
+
   for (const [, hourData] of hourGroups.entries()) {
     // Filter out null values for averaging
     const validValues = hourData.filter(([, v]) => v !== null).map(([, v]) => v as number)
-    
+
     let avgValue: number | null = null
     if (validValues.length > 0) {
       avgValue = validValues.reduce((sum, val) => sum + val, 0) / validValues.length
@@ -223,7 +223,7 @@ export function aggregateByHour(
     const [firstTimestamp] = hourData[0]
     const hourStart = new Date(firstTimestamp)
     hourStart.setMinutes(0, 0, 0)
-    
+
     aggregated.push([hourStart.getTime(), avgValue])
   }
 
@@ -248,7 +248,7 @@ export function aggregateByMonth(
     const date = new Date(timestamp)
     // Create a key for the month (YYYY-MM)
     const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`
-    
+
     if (!monthGroups.has(monthKey)) {
       monthGroups.set(monthKey, [])
     }
@@ -257,11 +257,11 @@ export function aggregateByMonth(
 
   // Calculate average for each month
   const aggregated: Array<[number, number | null]> = []
-  
+
   for (const [, monthData] of monthGroups.entries()) {
     // Filter out null values for averaging
     const validValues = monthData.filter(([, v]) => v !== null).map(([, v]) => v as number)
-    
+
     let avgValue: number | null = null
     if (validValues.length > 0) {
       avgValue = validValues.reduce((sum, val) => sum + val, 0) / validValues.length
@@ -272,7 +272,7 @@ export function aggregateByMonth(
     const monthStart = new Date(firstTimestamp)
     monthStart.setDate(1)
     monthStart.setHours(0, 0, 0, 0)
-    
+
     aggregated.push([monthStart.getTime(), avgValue])
   }
 
@@ -281,4 +281,3 @@ export function aggregateByMonth(
 
   return aggregated
 }
-

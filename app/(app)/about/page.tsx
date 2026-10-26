@@ -26,7 +26,7 @@ export default function AboutPage() {
       {/* ── About the Project ─────────────────────────────────────── */}
       <Card className="relative overflow-hidden border-border/50 app-card">
         <div className="absolute inset-0 bg-gradient-to-br from-primary/[0.03] to-transparent pointer-events-none" />
-  
+
         <CardContent className="relative prose prose-sm max-w-none text-foreground/80">
           <p>
             Η εφαρμογή αυτή αναπτύχθηκε στα πλαίσια διπλωματικής εργασίας και επιτρέπει

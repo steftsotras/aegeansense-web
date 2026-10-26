@@ -5,16 +5,16 @@
  * "CONNECTED" for stations that have been silent for months. Instead we infer
  * status from `last_seen` (the timestamp of the most recent reading).
  *
- * Because the platform's sync cycle is daily (~24h, see thesis ch. 5), a
- * perfectly healthy station's `last_seen` can legitimately trail "now" by up to
- * a full cycle. We therefore allow two cycles before downgrading from active.
+ * The 48-hour grace period accommodates deployments that sync daily. The API
+ * refreshes `last_seen` on its own schedule (SYNC_INTERVAL_HOURS); if that is
+ * disabled, timestamps only move when an administrator triggers a sync.
  */
 
 import type { Station } from "@/lib/api"
 
 export type ActivityStatus = "online" | "idle" | "offline"
 
-/** Within this age a station is considered active (2 sync cycles). */
+/** Within this age the cached station data is considered active. */
 export const ONLINE_MAX_AGE_MS = 48 * 60 * 60 * 1000 // 48 hours
 /** Within this age a station is idle/stale; beyond it, offline. */
 export const IDLE_MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000 // 7 days

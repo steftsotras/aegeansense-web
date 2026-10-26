@@ -1,23 +1,23 @@
 /**
  * API Client
- * 
+ *
  * Main entry point for the the backend API integration.
- * 
+ *
  * @example
  * // Import the default API instance
  * import { api } from '@/lib/api';
  * const stations = await api.getStations();
- * 
+ *
  * // Or create a custom instance
  * import { ApiClient } from '@/lib/api';
  * const api = new ApiClient('https://custom-url.com');
- * 
+ *
  * // Import types
  * import type { Station, HistoricalData } from '@/lib/api';
- * 
+ *
  * // Import adapters for Highcharts integration
  * import { toHighchartsSeries, toLegacyFormat } from '@/lib/api';
- * 
+ *
  * // Import utilities
  * import { formatMetricValue, timeAgo, getStatusColor } from '@/lib/api';
  */
@@ -44,19 +44,19 @@ export type {
   // Core types
   Station,
   MetricReading,
-  
+
   // Historical data
   HistoricalData,
   MetricSeries,
   DataPoint,
-  
+
   // Latest readings
   LatestReadings,
-  
+
   // Metrics
   MetricDefinition,
   KnownMetric,
-  
+
   // Sync (Admin)
   SyncStatus,
   SyncRunInfo,
@@ -72,7 +72,7 @@ export type {
 
   // System
   HealthStatus,
-  
+
   // Request options
   ReadingsOptions,
   StationsFilter,
@@ -91,12 +91,12 @@ export {
   getMetricSeries,
   getMetricChartData,
   getAllMetricChartData,
-  
+
   // Legacy format adapters (for migration)
   toLegacyFormat,
   toLegacyStation,
   toLegacyStations,
-  
+
   // Data processing
   downsampleLTTB,
   getSeriesStats,
@@ -117,22 +117,22 @@ export {
   // Value formatting
   formatMetricValue,
   formatNumber,
-  
+
   // Time utilities
   timeAgo,
   formatDate,
   getDateRange,
-  
+
   // Status utilities
   getStatusColor,
   getStatusClass,
   getStatusText,
-  
+
   // Station type utilities
   getStationTypeLabel,
   getStationTypeIcon,
   getStationTypeColor,
-  
+
   // Validation
   hasValidCoordinates,
   isReasonableValue,

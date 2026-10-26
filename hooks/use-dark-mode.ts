@@ -19,7 +19,7 @@ export function useDarkMode(): boolean {
   // resolvedTheme will be 'dark' or 'light', never 'system'
   const isDark = React.useMemo(() => {
     if (!mounted) return false // Default to light during SSR
-    
+
     const activeTheme = resolvedTheme || theme
     return activeTheme === "dark"
   }, [theme, resolvedTheme, mounted])

@@ -1,6 +1,6 @@
 /**
  * API - Type Definitions
- * 
+ *
  * These types match the backend API response shapes.
  */
 
@@ -115,6 +115,7 @@ export interface SyncRunInfo {
  * Overall sync status.
  */
 export interface SyncStatus {
+  sync_running?: boolean;
   stations_in_db: number;
   readings_in_db: number;
   entities_fully_synced: number;
@@ -254,7 +255,7 @@ export interface StationsFilter {
  * Known metric names in the system.
  * Use this for type-safe metric access.
  */
-export type KnownMetric = 
+export type KnownMetric =
   | 'airTemperature'
   | 'soilTemperature'
   | 'airRelativeHumidity'

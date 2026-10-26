@@ -1,9 +1,9 @@
 /**
  * API Adapters
- * 
+ *
  * These utilities help bridge the new backend API response format with
  * your existing frontend code (like Highcharts formatters).
- * 
+ *
  * This allows you to migrate gradually without rewriting everything at once.
  */
 
@@ -32,10 +32,10 @@ export interface HighchartsSeries {
 
 /**
  * Convert API historical data to Highcharts series format.
- * 
+ *
  * @param historicalData - Response from api.getReadings()
  * @returns Array of Highcharts-ready series
- * 
+ *
  * @example
  * const data = await api.getReadings(stationId, { metrics: 'airTemperature', agg: 'hour' });
  * const series = toHighchartsSeries(data);
@@ -57,7 +57,7 @@ export function toHighchartsSeries(historicalData: HistoricalData): HighchartsSe
 
 /**
  * Convert a single metric series to Highcharts format.
- * 
+ *
  * @param series - A single MetricSeries from the API response
  * @returns Highcharts-ready series object
  */
@@ -77,7 +77,7 @@ export function metricSeriesToHighcharts(series: MetricSeries): HighchartsSeries
 
 /**
  * Get data for a specific metric from the historical response.
- * 
+ *
  * @param historicalData - Response from api.getReadings()
  * @param metricName - The metric to extract (e.g., 'airTemperature')
  * @returns The metric series or null if not found
@@ -91,7 +91,7 @@ export function getMetricSeries(
 
 /**
  * Extract chart data for a specific metric as [timestamp, value] array.
- * 
+ *
  * @param historicalData - Response from api.getReadings()
  * @param metricName - The metric to extract
  * @returns Array of [timestamp_ms, value] pairs
@@ -102,7 +102,7 @@ export function getMetricChartData(
 ): HighchartsPoint[] {
   const series = getMetricSeries(historicalData, metricName);
   if (!series) return [];
-  
+
   return series.data.map(point => [
     new Date(point.recorded_at).getTime(),
     point.value
@@ -111,7 +111,7 @@ export function getMetricChartData(
 
 /**
  * Convert all series in historical data to a map of chart data.
- * 
+ *
  * @param historicalData - Response from api.getReadings()
  * @returns Object mapping metric names to chart data arrays
  */
@@ -119,14 +119,14 @@ export function getAllMetricChartData(
   historicalData: HistoricalData
 ): Record<string, HighchartsPoint[]> {
   const result: Record<string, HighchartsPoint[]> = {};
-  
+
   for (const series of historicalData.series) {
     result[series.metric] = series.data.map(point => [
       new Date(point.recorded_at).getTime(),
       point.value
     ]);
   }
-  
+
   return result;
 }
 
@@ -150,13 +150,13 @@ export interface LegacyHistoricalResponse {
 
 /**
  * Convert new API format to legacy FINoT format.
- * 
+ *
  * Use this if you want to keep using your existing highcharts-formatters.ts
  * without modification.
- * 
+ *
  * @param historicalData - Response from api.getReadings()
  * @returns Data in the legacy FINoT response format
- * 
+ *
  * @example
  * const data = await api.getReadings(stationId);
  * const legacyFormat = toLegacyFormat(data);
@@ -171,10 +171,10 @@ export function toLegacyFormat(historicalData: HistoricalData): LegacyHistorical
       timestampSet.add(point.recorded_at);
     });
   });
-  
+
   // Sort timestamps
   const index = Array.from(timestampSet).sort();
-  
+
   // Build attributes array
   const attributes = historicalData.series.map(series => {
     // Create a map for O(1) lookup
@@ -182,16 +182,16 @@ export function toLegacyFormat(historicalData: HistoricalData): LegacyHistorical
     series.data.forEach(point => {
       dataMap.set(point.recorded_at, point.value);
     });
-    
+
     // Build values array aligned with index
     const values = index.map(ts => dataMap.get(ts) ?? null);
-    
+
     return {
       attrName: series.metric,
       values
     };
   });
-  
+
   return {
     result: {
       index,
@@ -220,9 +220,9 @@ export interface LegacyFormattedStation {
 
 /**
  * Convert new Station format to legacy FormattedStation format.
- * 
+ *
  * Use this if you want to keep your existing UI components unchanged.
- * 
+ *
  * @param station - Station from api.getStations()
  * @returns Station in legacy format
  */
@@ -239,7 +239,7 @@ export function toLegacyStation(station: Station): LegacyFormattedStation {
     type: station.type,
     status: station.connection_status,
     statusColor: statusColors[station.connection_status] || '#b2c9c5',
-    location: station.latitude && station.longitude 
+    location: station.latitude && station.longitude
       ? { lat: station.latitude, lon: station.longitude }
       : null,
     metrics: Object.fromEntries(
@@ -266,7 +266,7 @@ export function toLegacyStations(stations: Station[]): LegacyFormattedStation[] 
 /**
  * Downsample data points using LTTB algorithm (Largest-Triangle-Three-Buckets).
  * Useful when displaying large datasets in charts.
- * 
+ *
  * @param data - Array of data points
  * @param threshold - Maximum number of points to return
  * @returns Downsampled data array
@@ -313,7 +313,7 @@ export function downsampleLTTB(data: DataPoint[], threshold: number): DataPoint[
     for (let j = rangeStart; j < rangeEnd && j < data.length; j++) {
       const currX = new Date(data[j].recorded_at).getTime();
       const currY = data[j].value;
-      
+
       const area = Math.abs(
         (prevX - avgX) * (currY - prevY) -
         (prevX - currX) * (avgY - prevY)

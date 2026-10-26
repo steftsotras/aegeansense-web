@@ -25,7 +25,7 @@ export const metadata: Metadata = {
   description: "AegeanSense: real-time environmental monitoring for microclimate, weather, soil, and air quality across the Aegean.",
   icons: {
     icon: [
-      { url: "/logo.ico", sizes: "any" },
+      { url: "/favicon.ico", sizes: "any" },
       { url: "/logo-aegeansense-symbol.png", type: "image/png" },
     ],
     apple: "/logo-aegeansense-symbol.png",

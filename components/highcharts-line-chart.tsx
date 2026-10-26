@@ -360,7 +360,7 @@ export function exportChartCSV(chartRef: React.MutableRefObject<{ downloadCSV?: 
 export function exportChartPNG(chartRef: React.MutableRefObject<{ exportChart?: (options: unknown, config?: unknown) => void } | null>, filename?: string) {
   if (chartRef.current?.exportChart) {
     // Check if dark mode is active
-    const isDark = document.documentElement.classList.contains("dark") || 
+    const isDark = document.documentElement.classList.contains("dark") ||
                    window.matchMedia("(prefers-color-scheme: dark)").matches
     const bgColor = isDark ? "#064049" : "#ffffff"
     chartRef.current.exportChart(
@@ -376,7 +376,7 @@ export function exportChartPNG(chartRef: React.MutableRefObject<{ exportChart?: 
 export function exportChartSVG(chartRef: React.MutableRefObject<{ exportChart?: (options: unknown, config?: unknown) => void } | null>, filename?: string) {
   if (chartRef.current?.exportChart) {
     // Check if dark mode is active
-    const isDark = document.documentElement.classList.contains("dark") || 
+    const isDark = document.documentElement.classList.contains("dark") ||
                    window.matchMedia("(prefers-color-scheme: dark)").matches
     const bgColor = isDark ? "#064049" : "#ffffff"
     chartRef.current.exportChart(

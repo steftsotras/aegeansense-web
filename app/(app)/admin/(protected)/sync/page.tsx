@@ -60,8 +60,18 @@ export default function AdminSyncPage() {
   const [testing, setTesting] = React.useState(false)
   const [actionMsg, setActionMsg] = React.useState<string | null>(null)
   const [conn, setConn] = React.useState<{ configured: boolean; success?: boolean; error?: string } | null>(null)
+  const scopeVersion = React.useRef(0)
 
-  const isRunning = status?.latest_sync_run?.status === "running"
+  function selectProfile(value: string) {
+    scopeVersion.current += 1
+    setSelectedId(value)
+    setStatus(null)
+    setConn(null)
+    setActionMsg(null)
+    setError(null)
+  }
+
+  const isRunning = status?.sync_running ?? status?.latest_sync_run?.status === "running"
   const activeProfiles = profiles.filter((p) => p.is_active)
   const selectedProfile =
     selectedId === ALL_PROFILES ? null : activeProfiles.find((p) => String(p.id) === selectedId) ?? null
@@ -85,13 +95,16 @@ export default function AdminSyncPage() {
   }, [errorMessage])
 
   const refresh = React.useCallback(async () => {
+    const version = scopeVersion.current
     try {
       const profileId = selectedId === ALL_PROFILES ? undefined : Number(selectedId)
       const [s, r] = await Promise.all([api.getSyncStatus(profileId), api.getSyncRuns(8)])
+      if (version !== scopeVersion.current) return
       setStatus(s)
       setRuns(r)
       setError(null)
     } catch (e) {
+      if (version !== scopeVersion.current) return
       setError(errorMessage(e, "Αποτυχία ανάκτησης κατάστασης συγχρονισμού"))
     }
   }, [selectedId, errorMessage])
@@ -147,12 +160,15 @@ export default function AdminSyncPage() {
 
   async function handleTest() {
     if (!selectedProfile) return
+    const version = scopeVersion.current
     setTesting(true)
     setConn(null)
     try {
-      setConn(await api.testConnection(selectedProfile.id))
+      const result = await api.testConnection(selectedProfile.id)
+      if (version === scopeVersion.current) setConn(result)
     } catch (e) {
-      setConn({ configured: false, error: errorMessage(e, "Αποτυχία ελέγχου") })
+      const message = errorMessage(e, "Αποτυχία ελέγχου")
+      if (version === scopeVersion.current) setConn({ configured: false, error: message })
     } finally {
       setTesting(false)
     }
@@ -182,7 +198,7 @@ export default function AdminSyncPage() {
       {/* Profile scope selector */}
       <div className="flex flex-wrap items-center gap-3">
         <span className="text-sm text-muted-foreground">Προφίλ FINoT:</span>
-        <Select value={selectedId} onValueChange={setSelectedId}>
+        <Select value={selectedId} onValueChange={selectProfile}>
           <SelectTrigger className="w-56">
             <SelectValue />
           </SelectTrigger>
@@ -324,11 +340,11 @@ export default function AdminSyncPage() {
                 ) : (
                   <IconAlertTriangle className="size-4" />
                 )}
-                {!conn.configured
+                {conn.error || (!conn.configured
                   ? "Δεν έχουν ρυθμιστεί τα διαπιστευτήρια FINoT."
                   : conn.success
                     ? "Επιτυχής σύνδεση με το FINoT."
-                    : conn.error || "Αποτυχία σύνδεσης."}
+                    : "Αποτυχία σύνδεσης.")}
               </div>
             )}
           </CardContent>

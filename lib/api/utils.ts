@@ -1,6 +1,6 @@
 /**
  * API - Utility Functions
- * 
+ *
  * Helper functions for formatting, time calculations, and display.
  */
 
@@ -10,12 +10,12 @@
 
 /**
  * Format a metric value with its unit.
- * 
+ *
  * @param value - The numeric value
  * @param unit - The unit string (can be null)
  * @param decimals - Number of decimal places (default: 1)
  * @returns Formatted string like "23.5 °C"
- * 
+ *
  * @example
  * formatMetricValue(23.5, '°C') // "23.5 °C"
  * formatMetricValue(23.456, '%', 1) // "23.5 %"
@@ -32,7 +32,7 @@ export function formatMetricValue(
 
 /**
  * Format a large number with thousands separators.
- * 
+ *
  * @example
  * formatNumber(1234567) // "1,234,567"
  */
@@ -46,16 +46,16 @@ export function formatNumber(value: number): string {
 
 /**
  * Get a human-readable "time ago" string.
- * 
+ *
  * @param dateString - ISO date string
  * @returns Human-readable string like "2 hours ago"
- * 
+ *
  * @example
  * timeAgo('2024-02-04T12:00:00Z') // "2 hours ago"
  */
 export function timeAgo(dateString: string | null): string {
   if (!dateString) return 'Never';
-  
+
   const date = new Date(dateString);
   const now = new Date();
   const seconds = Math.floor((now.getTime() - date.getTime()) / 1000);
@@ -74,13 +74,13 @@ export function timeAgo(dateString: string | null): string {
     const days = Math.floor(seconds / 86400);
     return `${days} ${days === 1 ? 'day' : 'days'} ago`;
   }
-  
+
   return date.toLocaleDateString();
 }
 
 /**
  * Format a date for display.
- * 
+ *
  * @param dateString - ISO date string
  * @param options - Intl.DateTimeFormat options
  * @returns Formatted date string
@@ -100,7 +100,7 @@ export function formatDate(
 
 /**
  * Get date range for common time periods.
- * 
+ *
  * @param period - Time period identifier
  * @returns Object with from and to dates
  */
@@ -140,7 +140,7 @@ export function getDateRange(period: 'today' | 'week' | 'month' | 'year' | 'cust
 
 /**
  * Get a color for connection status.
- * 
+ *
  * @param status - Connection status string
  * @returns Hex color code
  */
@@ -157,7 +157,7 @@ export function getStatusColor(status: string): string {
 
 /**
  * Get Tailwind CSS class for connection status.
- * 
+ *
  * @param status - Connection status string
  * @returns Tailwind background color class
  */
@@ -174,7 +174,7 @@ export function getStatusClass(status: string): string {
 
 /**
  * Get human-readable status text.
- * 
+ *
  * @param status - Connection status string
  * @returns Human-readable status
  */
@@ -237,7 +237,7 @@ export function getStationTypeColor(type: string): string {
  * Check if a station has valid coordinates for mapping.
  */
 export function hasValidCoordinates(station: { latitude: number | null; longitude: number | null }): boolean {
-  return station.latitude !== null && 
+  return station.latitude !== null &&
          station.longitude !== null &&
          !isNaN(station.latitude) &&
          !isNaN(station.longitude);
@@ -261,6 +261,6 @@ export function isReasonableValue(metric: string, value: number): boolean {
 
   const metricBounds = bounds[metric];
   if (!metricBounds) return true;
-  
+
   return value >= metricBounds.min && value <= metricBounds.max;
 }

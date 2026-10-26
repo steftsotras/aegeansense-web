@@ -17,8 +17,6 @@ import { Button } from "@/components/ui/button"
 import { api, type Station } from "@/lib/api"
 import { relativeTimeGreek } from "@/lib/station-status"
 
-const DEFAULT_MEASUREMENTS_IN_DATABASE = 1_085_238
-
 async function fetchStations(): Promise<Station[]> {
   try {
     return await api.getStations({}, { next: { revalidate: 60 } })
@@ -87,10 +85,10 @@ export default async function Home() {
   const metricCount = new Set(
     stations.flatMap((station) => Object.keys(station.metrics || {}))
   ).size
-  const configuredMeasurementCount = Number(process.env.NEXT_PUBLIC_READINGS_IN_DB)
-  const measurementsInDatabase = Number.isFinite(configuredMeasurementCount)
+  const configuredMeasurementCount = Number(process.env.NEXT_PUBLIC_READINGS_IN_DB || NaN)
+  const measurementsInDatabase = Number.isInteger(configuredMeasurementCount) && configuredMeasurementCount >= 0
     ? configuredMeasurementCount
-    : DEFAULT_MEASUREMENTS_IN_DATABASE
+    : null
 
   return (
     <main className="min-h-screen bg-background">
@@ -198,8 +196,8 @@ export default async function Home() {
         <section className="rounded-lg bg-muted/55 px-2 sm:px-4" aria-label="Κατάσταση δικτύου">
           <div className="grid grid-cols-2 md:grid-cols-4">
             <StatItem
-              label="Μετρήσεις στη βάση"
-              value={measurementsInDatabase.toLocaleString("el-GR")}
+              label="Μετρήσεις (στιγμιότυπο)"
+              value={measurementsInDatabase?.toLocaleString("el-GR") ?? "—"}
             />
             <StatItem
               label="Συνδεδεμένοι τώρα"
